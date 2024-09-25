@@ -2,9 +2,15 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
-# Create your models here.
+
 ROLES = ['Admin', 'Manager', 'Doctor', 'User']
 
+CHOICES_ROLE_FOR_MYUSER = [
+    ('admin', 'Admin'),
+    ('manager', 'Manager'),
+    ('doctor', 'Doctor'),
+    ('user', 'User')
+]
 
 class Role(models.Model):
     role = models.CharField(max_length=20)

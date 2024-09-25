@@ -1,10 +1,10 @@
 # SECTION - Бизнес логика для классов предствления из микросервиса account
 
 
-from ..models import User, ROLES, Role
+from ..models import User, ROLES, Role, CHOICES_ROLE_FOR_MYUSER
 from rest_framework.response import Response
-from django.http import HttpRequest
 from rest_framework import status, request
+
 
 def _role_is_exist(roles):
     try:
@@ -12,7 +12,7 @@ def _role_is_exist(roles):
         counter = 0
 
         for role in roles:
-            for my_role in ROLES:
+            for my_role in CHOICES_ROLE_FOR_MYUSER:
                 if role in my_role:
                     counter += 1
                     break
@@ -216,3 +216,4 @@ def update(user, data):
     
     except:
         return {f"{user.username}": "Пользователь не был обновлен."}
+    
