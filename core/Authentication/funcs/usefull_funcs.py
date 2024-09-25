@@ -194,8 +194,9 @@ def update(user, data):
 
         user.lastName=data['lastName']
         user.firstName=data['firstName']
-        user.username=data['username']
-
+        user.username=data['username'] #????????
+        
+        
         user.set_password(data['password'])
 
         user.save()
@@ -205,7 +206,6 @@ def update(user, data):
         try:
             if data['roles']:
                 response_from_roles = add_role(user, data)
-
                 if response_from_roles:
                     response["messages"] = response_from_roles
 
