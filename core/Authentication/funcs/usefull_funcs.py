@@ -152,8 +152,18 @@ def get_info(user):
         "username": str(user.username),
         "roles": role_list
         })
+def get_users_by_role(request_role):
+    try:
+        role = Role.objects.get(role="Doctor")
+        users = User.objects.filter(roles__exact=role)
 
-def _role_is_exist(roles: list[str]) -> bool:
+        return users
+
+    except:
+        print(False)
+        return False
+    
+def _role_is_exist(roles):
     try:
         roles_count = len(roles)
         counter = 0
