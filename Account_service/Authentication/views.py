@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from rest_framework import views, response, generics, permissions
-from .models import User
+from api.models import User
 from .serializers import *
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
 class SignUpView(generics.CreateAPIView):
+    serializer_class = SignUpSerializer
     def post(self, request):
 
         user = User.objects.create(

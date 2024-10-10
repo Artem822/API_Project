@@ -1,4 +1,4 @@
-from Authentication.models import User
+from api.models import User
 from rest_framework import serializers
 
 class AccountsSerializer(serializers.ModelSerializer):

@@ -1,5 +1,5 @@
 from rest_framework import views, response, generics, permissions
-from Authentication.models import User, Role
+from api.models import User, Role
 from .serializers import *
 from Authentication.serializers import *
 

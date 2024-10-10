@@ -1,5 +1,5 @@
 from rest_framework import views, response, generics, permissions
-from .models import *
+from api.models import *
 from .serializers import *
 class HospitalView(views.APIView):
     permission_classes = (permissions.IsAuthenticated, )

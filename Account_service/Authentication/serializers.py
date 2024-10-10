@@ -1,4 +1,4 @@
-from .models import User
+from api.models import User
 from rest_framework import serializers, response
 
 class UserSerializer(serializers.ModelSerializer):
