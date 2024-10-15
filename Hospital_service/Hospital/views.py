@@ -1,8 +1,10 @@
 from rest_framework import views, response, generics, permissions
 from api.models import *
 from .serializers import *
-class HospitalView(views.APIView):
+class HospitalView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, )
+    serializer_class = HospitalIdSerializer
+    queryset = Hospital.objects.all()
     
     def get(self, request):        
         obj = Hospital.objects.all()
@@ -24,15 +26,24 @@ class HospitalView(views.APIView):
         rooms = list(Room.objects.filter(room__in=request.data['rooms']))
         hospital.rooms.set(rooms)
         hospital.save()
-        return response.Response("W")
+        return response.Response("Больница успешно добавлена")
 
-class HospitaIdView(views.APIView):
+class HospitaIdView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, )
+    serializer_class = HospitalIdSerializer
+    queryset = Hospital.objects.all()
     
     def get(self, request, id):
         obj = Hospital.objects.get(id=id)
-        serializer = HospitalIdSerializer(obj)
-        return response.Response(serializer.data)
+        rooms=[]        
+        for room in obj.rooms.all().values_list('room'):
+            rooms.append(room[0])
+        return response.Response({
+            "name": str(obj.name),
+            "address": str(obj.address),
+            "contactPhone": str(obj.contactPhone),
+            "rooms": rooms
+        })
     
     def put(self, request, id):
         obj = Hospital.objects.get(id=id)
@@ -53,7 +64,9 @@ class HospitaIdView(views.APIView):
         obj.delete()
         return response.Response(f'Больница {obj.name} успешна удалена.')
  
-class RoomsView(views.APIView):   
+class RoomsView(generics.GenericAPIView):   
+    serializer_class = RoomsSerializer
+    queryset = Hospital.objects.all()
     def get(self, request, id):
         obj = Hospital.objects.get(id=id)
         serializer = RoomsSerializer(obj)

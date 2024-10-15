@@ -14,6 +14,7 @@ class AccountsSerializer(serializers.ModelSerializer):
         return len(User.objects.all())
 
 class AccountsPostSerializer(serializers.ModelSerializer):
+    roles = serializers.ListField(child=serializers.CharField())
     class Meta:
         model = User
         fields = ['lastName', 'firstName', 'username', 'password', 'roles']

@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-z1g6cxvoc$j&_u0tb6#8&u=fmq!h(g#lx62*@e_u4lufmyjaa7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'drf_spectacular',
     'django.contrib.postgres',
     'api',
     'Authentication',
@@ -95,6 +96,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', 
 }
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

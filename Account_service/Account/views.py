@@ -3,8 +3,10 @@ from api.models import User, Role
 from .serializers import *
 from Authentication.serializers import *
 
-class AccountsView(views.APIView):
+class AccountsView(generics.GenericAPIView):
     permission_classes = (permissions.IsAdminUser, )
+    serializer_class = AccountsPostSerializer
+    queryset = User.objects.all()
     
     def get(self, request):
         obj = User.objects.all()
@@ -31,19 +33,20 @@ class AccountsView(views.APIView):
         return response.Response(f"{user.username} успешно создан.")
 
 
-
-
-class MeView(views.APIView):
+class MeView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, )
+    serializer_class = AccountsPostSerializer
+    queryset = User.objects.all()
     
     def get(self, request):
         obj = User.objects.get(username=request.user)
         serializer = MeSerializer(obj)
         return response.Response(serializer.data)
 
-class MeUpdateView(views.APIView):
+class MeUpdateView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, )
-    
+    serializer_class = AccountsPostSerializer
+    queryset = User.objects.all()
     def put(self, request):
         obj = User.objects.get(username=request.user)
         obj.lastName=request.data['lastName']
@@ -52,7 +55,9 @@ class MeUpdateView(views.APIView):
         obj.save()
         return response.Response(f'{obj.username} успешно обновлён.')
 
-class UserIdView(views.APIView):
+class UserIdView(generics.GenericAPIView):
+    serializer_class = AccountsPostSerializer
+    queryset = User.objects.all()
     def put(self, request, id):
         obj = User.objects.get(id=id)
         obj.lastName=request.data['lastName']

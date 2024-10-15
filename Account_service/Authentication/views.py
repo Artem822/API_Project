@@ -6,6 +6,7 @@ from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, Bl
 
 class SignUpView(generics.CreateAPIView):
     serializer_class = SignUpSerializer
+    queryset = User.objects.all()
     def post(self, request):
 
         user = User.objects.create(
@@ -18,11 +19,15 @@ class SignUpView(generics.CreateAPIView):
         
         return response.Response("Пользователь успешно создан")
     
-class ValidateTokenAPIView(views.APIView):
+class ValidateTokenAPIView(generics.GenericAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
     def get(self, request):
         return response.Response({"accessToken": f"{request.user.access_token}"})    
 
-class ResetTokenAPIView(views.APIView):
+class ResetTokenAPIView(generics.GenericAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated, ]
     
     def post(self, request):

@@ -1,5 +1,5 @@
 """
-URL configuration for Timetable_service project.
+URL configuration for Document_service project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -16,12 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import *
 
 urlpatterns = [
-    path("", TimetableView.as_view()),
-    path("<int:id>/", TimetableUpdateView.as_view()),
-    path("Doctor/<int:id>/", TimetableViewDoctor.as_view()),
-    path("Hospital/<int:id>/", TimetableViewHospital.as_view()),
-    path("<int:id>/Appointments/", AppointmentView.as_view()),
+    path('admin/', admin.site.urls),
+    path("api/", include("api.urls"))
 ]

@@ -14,21 +14,17 @@ class HospitalSerializer(serializers.ModelSerializer):
         return len(Hospital.objects.all())
 
 class HospitalIdSerializer(serializers.ModelSerializer):
-    rooms = serializers.SerializerMethodField()
+    rooms = serializers.ListField(child=serializers.CharField())
     class Meta:
         model = Hospital
-        fields = ["name", "address", "contactPhone", "rooms"]
+        fields = ['name', 'address', 'contactPhone', 'rooms']
+        extra_kwargs = {
+            'name': {'required': True},
+            'address': {'required': True},
+            'contactPhone': {'required': True},
+            'rooms': {'required': False},
+        }
     
-    def get_rooms(self, obj):
-        room_list = []
-        hospital = Hospital.objects.get(name=obj)
-        try:
-            for room in hospital.rooms.all():
-                room_list.append(room.room)
-            return room_list
-
-        except:
-            return []
 
 class RoomsSerializer(serializers.ModelSerializer):
     rooms = serializers.SerializerMethodField()

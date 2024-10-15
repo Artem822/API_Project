@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-r!@*)n@7uo4^tjam0m$==s61dght&x7y7pcy$8ffis(p33&2&q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'django.contrib.postgres',
-    'api'
+    'drf_spectacular',
+    'api',
+    "Timetable",
 ]
 
 MIDDLEWARE = [
@@ -61,6 +63,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
 }
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -78,6 +81,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Timetable_service.wsgi.application'
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -88,8 +92,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
-AUTH_USER_MODEL = 'api.User'
+
+AUTH_USER_MODEL = "api.User"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 

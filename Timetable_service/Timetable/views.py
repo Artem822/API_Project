@@ -40,6 +40,10 @@ class TimetableView(views.APIView):
         hospital = Hospital.objects.get(pk=request.data["hospitalId"])
         hospital.timetables.add(timetable)
         hospital.save()
+        room = Room.objects.get(room=request.data["room"])
+        room.id_timetable.add(timetable)
+        room.save()
+        
 
         return response.Response("Рассписание создано")
     
@@ -50,6 +54,10 @@ class TimetableUpdateView(views.APIView):
         hospital= Hospital.objects.get(name=timetable.hospitalId)
         hospital.timetables.set("")
         hospital.save()
+        
+        room = Room.objects.get(room=timetable.id_room)
+        room.id_timetable.set("")
+        room.save()
         try:  
             
             date_from = datetime.strptime(request.data["from"], '%Y-%m-%dT%H:%M:%SZ')
@@ -81,6 +89,10 @@ class TimetableUpdateView(views.APIView):
         hospital = Hospital.objects.get(pk=request.data["hospitalId"])
         hospital.timetables.add(timetable)
         hospital.save()
+        
+        room = Room.objects.get(room=request.data["room"])
+        room.id_timetable.add(timetable)
+        room.save()
         return response.Response("Рассписание изменено.")
     
     def delete(self, request, id):
