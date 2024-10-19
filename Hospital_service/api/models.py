@@ -20,7 +20,7 @@ class User(AbstractUser):
 class Room(models.Model):
     room = models.CharField(max_length=50)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return str(self.room)
     
 
@@ -30,6 +30,7 @@ class Hospital(models.Model):
     address = models.CharField(max_length=100)
     contactPhone = models.CharField(max_length=11)
     rooms = models.ManyToManyField(Room, blank=True)
+    
 
-    def __str__(self) -> str:
+    def __str__(self):
         return str(self.name)

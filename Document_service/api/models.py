@@ -30,7 +30,7 @@ class Hospital(models.Model):
     rooms = models.ManyToManyField(Room, blank=True)
     timetables = models.ManyToManyField('TimeTable', blank=True)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
     
 

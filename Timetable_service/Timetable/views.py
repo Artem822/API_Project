@@ -1,11 +1,11 @@
 from rest_framework import views, response, generics, permissions
 from api.models import *
-from datetime import datetime, timedelta
-from django.utils import timezone
-from rest_framework import serializers
+from datetime import datetime
+from .serializers import *
 
-class TimetableView(views.APIView):
-    
+class TimetableView(generics.GenericAPIView):
+    queryset = TimeTable.objects.all()
+    serializer_class = TimeTableSerializer
     def post(self, request):
 
         try:
@@ -47,8 +47,9 @@ class TimetableView(views.APIView):
 
         return response.Response("Рассписание создано")
     
-class TimetableUpdateView(views.APIView): 
-    
+class TimetableUpdateView(generics.GenericAPIView): 
+    queryset = TimeTable.objects.all()
+    serializer_class = TimeTableSerializer
     def put(self, request, id):
         timetable = TimeTable.objects.get(pk=id)  
         hospital= Hospital.objects.get(name=timetable.hospitalId)
@@ -83,7 +84,7 @@ class TimetableUpdateView(views.APIView):
         timetable.doctorId=User.objects.get(pk=request.data["doctorId"])
         timetable.date_from=date_from
         timetable.date_to=date_to
-        timetable.id_room=Room.objects.get(room=request.data["room"])
+        timetable.room=Room.objects.get(room=request.data["room"])
         timetable.save()
         
         hospital = Hospital.objects.get(pk=request.data["hospitalId"])
@@ -101,7 +102,9 @@ class TimetableUpdateView(views.APIView):
         
         return response.Response("Рассписание удалено.")
     
-class TimetableViewDoctor(views.APIView):
+class TimetableViewDoctor(generics.GenericAPIView):
+    queryset = TimeTable.objects.all()
+    serializer_class = MyUserTimeTableSerializer
     def delete(self, request, id):
         timetable = TimeTable.objects.get(doctorId=id)
         timetable.delete()
@@ -125,9 +128,20 @@ class TimetableViewHospital(views.APIView):
         timetable = TimeTable.objects.get(hospitalId=hospital)
         return response.Response({"from":timetable.date_from,
                                   "to":timetable.date_to})
-        
-class AppointmentView(views.APIView):
-
+class TimeTableByRoomAPIView(views.APIView):
+    def get(self, request, id, room):
+        resp = {}
+        room = Room.objects.get(room=room)
+        hospital = Hospital.objects.get(pk=id)
+        if  room not in hospital.rooms.all():
+            return response.Response( f"Комната: {room} не найдена в данной больнице больнице!")
+        resp["from:"] = " ".join(str(room.id_timetable).split()[1:3])
+        resp["to:"] = " ".join(str(room.id_timetable).split()[4:])
+        return response.Response(resp)
+           
+class AppointmentView(generics.GenericAPIView):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
     def get(self, request, id):
         appointments = []
         timetable = TimeTable.objects.get(pk=id)

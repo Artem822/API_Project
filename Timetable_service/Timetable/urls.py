@@ -24,4 +24,5 @@ urlpatterns = [
     path("Doctor/<int:id>/", TimetableViewDoctor.as_view()),
     path("Hospital/<int:id>/", TimetableViewHospital.as_view()),
     path("<int:id>/Appointments/", AppointmentView.as_view()),
+    path("Hospital/<int:id>/Room/<str:room>", TimeTableByRoomAPIView.as_view())
 ]
