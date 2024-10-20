@@ -3,7 +3,10 @@ from api.models import User, Role
 from .serializers import *
 from Authentication.serializers import *
 
+
+
 class AccountsView(generics.GenericAPIView):
+
     permission_classes = (permissions.IsAdminUser, )
     serializer_class = AccountsPostSerializer
     queryset = User.objects.all()
@@ -58,6 +61,7 @@ class MeUpdateView(generics.GenericAPIView):
 class UserIdView(generics.GenericAPIView):
     serializer_class = AccountsPostSerializer
     queryset = User.objects.all()
+    permission_classes = [permissions.IsAdminUser, ]
     def put(self, request, id):
         obj = User.objects.get(id=id)
         obj.lastName=request.data['lastName']

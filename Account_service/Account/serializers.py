@@ -18,6 +18,7 @@ class AccountsPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['lastName', 'firstName', 'username', 'password', 'roles']
+        
 class MeSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField()
     class Meta:

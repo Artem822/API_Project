@@ -2,10 +2,12 @@ from rest_framework import views, response, generics, permissions
 from api.models import *
 from datetime import datetime
 from .serializers import *
+from .mypermissions import *
 
 class TimetableView(generics.GenericAPIView):
     queryset = TimeTable.objects.all()
     serializer_class = TimeTableSerializer
+    permission_classes = [AdminOrManagerPermission]
     def post(self, request):
 
         try:
@@ -50,6 +52,7 @@ class TimetableView(generics.GenericAPIView):
 class TimetableUpdateView(generics.GenericAPIView): 
     queryset = TimeTable.objects.all()
     serializer_class = TimeTableSerializer
+    permission_classes = [AdminOrManagerPermission]
     def put(self, request, id):
         timetable = TimeTable.objects.get(pk=id)  
         hospital= Hospital.objects.get(name=timetable.hospitalId)
@@ -105,6 +108,7 @@ class TimetableUpdateView(generics.GenericAPIView):
 class TimetableViewDoctor(generics.GenericAPIView):
     queryset = TimeTable.objects.all()
     serializer_class = MyUserTimeTableSerializer
+    permission_classes = [AdminOrManagerOrDoctorPermission]
     def delete(self, request, id):
         timetable = TimeTable.objects.get(doctorId=id)
         timetable.delete()
@@ -116,7 +120,7 @@ class TimetableViewDoctor(generics.GenericAPIView):
                                   "to":timetable.date_to})
 
 class TimetableViewHospital(views.APIView):
-    
+    permission_classes = [AdminOrManagerOrDoctorPermission]
     def delete(self, request, id):
         hospital = Hospital.objects.get(pk=id)
         timetable = TimeTable.objects.get(hospitalId=hospital)
@@ -129,6 +133,7 @@ class TimetableViewHospital(views.APIView):
         return response.Response({"from":timetable.date_from,
                                   "to":timetable.date_to})
 class TimeTableByRoomAPIView(views.APIView):
+    permission_classes = [AdminOrManagerOrDoctorPermission]
     def get(self, request, id, room):
         resp = {}
         room = Room.objects.get(room=room)
@@ -142,6 +147,7 @@ class TimeTableByRoomAPIView(views.APIView):
 class AppointmentView(generics.GenericAPIView):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
     def get(self, request, id):
         appointments = []
         timetable = TimeTable.objects.get(pk=id)
@@ -169,6 +175,7 @@ class AppointmentView(generics.GenericAPIView):
         return response.Response("Запись успешно добавлена")
 
 class AppointmentViewDelete(views.APIView):
+    permission_classes = [AdminOrManagerOrPacientPermission]
     def delete(self, request, id):
         appointment = Appointment.objects.get(pk=id)
         appointment.delete()

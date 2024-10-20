@@ -1,10 +1,12 @@
 from rest_framework import views, response, generics, permissions
 from api.models import *
 from .serializers import *
+from .mypermissions import *
 
 class HistoryAccountView(generics.GenericAPIView):
     serializer_class = HistoryAccountByIdSerializer
     queryset = User.objects.all()
+    permission_classes = [DoctorOrPacientPermission]
     
     def get(self, request, id):
         history = []
@@ -26,6 +28,12 @@ class HistoryAccountView(generics.GenericAPIView):
 class HistoryByIdView(generics.GenericAPIView):
     serializer_class = HistorySerializer
     queryset = History.objects.all()
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == 'GET':
+            self.permission_classes = [DoctorOrPacientPermission]
+        elif request.method == "PUT":
+            self.permission_classes = [AdminOrManagerOrDoctorPermission]
+        return super().dispatch(request, *args, **kwargs)
     
     def get(self,request, id):
         history = History.objects.get(pk=id)
@@ -47,6 +55,7 @@ class HistoryByIdView(generics.GenericAPIView):
 class HistoryView(generics.GenericAPIView):
     serializer_class = HistorySerializer
     queryset = History.objects.all()
+    permission_classes = [AdminOrManagerOrDoctorPermission]
     
     def post(self,request):
         user = User.objects.get(pk=request.data['pacientId'])

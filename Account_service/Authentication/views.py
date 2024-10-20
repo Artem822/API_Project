@@ -4,7 +4,12 @@ from api.models import User
 from .serializers import *
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
+#SECTION - Регистрация пользователей и получение токенов
+
 class SignUpView(generics.CreateAPIView):
+    """
+    #LINK: POST /api/Authentication/SignUp/
+    """
     serializer_class = SignUpSerializer
     queryset = User.objects.all()
     def post(self, request):
@@ -20,12 +25,22 @@ class SignUpView(generics.CreateAPIView):
         return response.Response("Пользователь успешно создан")
     
 class ValidateTokenAPIView(generics.GenericAPIView):
+    """
+    #LINK: Get /api/Authentication/Validate/
+    """
     serializer_class = UserSerializer
     queryset = User.objects.all()
     def get(self, request):
-        return response.Response({"accessToken": f"{request.user.access_token}"})    
+        try:
+            token = request.headers.get('Authorization').split(' ')[1]
+            return response.Response({"accessToken": f"{token}"})
+        except Exception as e:
+            return response.Response(f"Токен не активен: {str(e)}")  
 
 class ResetTokenAPIView(generics.GenericAPIView):
+    """
+    #LINK: POST /api/Authentication/Refresh/
+    """
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated, ]

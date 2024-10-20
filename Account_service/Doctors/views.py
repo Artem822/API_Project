@@ -2,8 +2,11 @@ from rest_framework import views, response, generics, permissions
 from api.models import User, Role
 from Authentication.serializers import *
 from Account.serializers import *
+from .serializers import *
 
-class DoctrosView(views.APIView):
+class DoctrosView(generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = GetDoctorsSerializer
     permission_classes = (permissions.IsAuthenticated, )
     def get(self, request):
         role = Role.objects.filter(role='Doctor')
@@ -13,8 +16,10 @@ class DoctrosView(views.APIView):
                 "from": user.pk,
                 "count": len(filter_users)})
         
-class DoctrosIdView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated, )
+class DoctrosIdView(generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
     def get(self, request, id):
         user = User.objects.get(pk=id)
         serializer = MeSerializer(user)

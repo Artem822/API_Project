@@ -67,6 +67,7 @@ class HospitaIdView(generics.GenericAPIView):
 class RoomsView(generics.GenericAPIView):   
     serializer_class = RoomsSerializer
     queryset = Hospital.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
     def get(self, request, id):
         obj = Hospital.objects.get(id=id)
         serializer = RoomsSerializer(obj)
