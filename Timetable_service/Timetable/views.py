@@ -4,7 +4,24 @@ from datetime import datetime
 from .serializers import *
 from .mypermissions import *
 
+# SECTION - Классы представления для микросервиса Timetable
+
+# LINK: POST /api/Timetable
 class TimetableView(generics.GenericAPIView):
+    """
+    ### Создание новой записи в расписании
+        **body:**
+        ```
+        {
+            "hospitalId": int,
+            "doctorId": int,
+            "date_from": "dateTime(ISO8601)",
+            "date_to": "dateTime(ISO8601)",
+            "room": "string"
+        }
+        ```
+        **Пример dateTime(ISO8601): "2024-04-25T11:30:00Z"** 
+    """
     queryset = TimeTable.objects.all()
     serializer_class = TimeTableSerializer
     permission_classes = [AdminOrManagerPermission]
@@ -48,8 +65,26 @@ class TimetableView(generics.GenericAPIView):
         
 
         return response.Response("Рассписание создано")
-    
+
+# LINK: PUT /api/Timetable/{id}/
+# LINK: DELETE /api/Timetable/{id}/
 class TimetableUpdateView(generics.GenericAPIView): 
+    """
+    ### Обновление расписания по Id
+        **body:**
+        ```
+        {
+            "hospitalId": int,
+            "doctorId": int,
+            "from": "dateTime(ISO8601)",
+            "to": "dateTime(ISO8601)",
+            "room": "string"
+        }
+        ```
+        **Пример dateTime(ISO8601): "2024-04-25T11:30:00Z"**
+    
+    ### Удаление расписания по Id
+    """
     queryset = TimeTable.objects.all()
     serializer_class = TimeTableSerializer
     permission_classes = [AdminOrManagerPermission]
@@ -104,11 +139,30 @@ class TimetableUpdateView(generics.GenericAPIView):
         timetable.delete()
         
         return response.Response("Рассписание удалено.")
-    
+
+# LINK - DELETE /api/Timetable/Doctor/{id}/
+# LINK - GET /api/Timetable/Doctor/{id}
 class TimetableViewDoctor(generics.GenericAPIView):
+    """
+    ### Получение расписания врача по Id
+        **body:**
+        {
+            "from": "string(ISO8601)",
+            "to": "string(ISO8601)"
+        }
+        **Пример dateTime(ISO8601): "2024-04-25T11:30:00Z"**
+        
+    ### Удаление записей расписания доктора
+    """
     queryset = TimeTable.objects.all()
     serializer_class = MyUserTimeTableSerializer
-    permission_classes = [AdminOrManagerOrDoctorPermission]
+    def despatch(self, request, *args, **kwargs):
+        if request.method == 'GET':
+            self.permission_classes = [permissions.IsAuthenticated]
+        elif request.method == 'DELETE':
+            self.permission_classes = [AdminOrManagerPermission]
+        return super().dispatch(request, *args, **kwargs)
+
     def delete(self, request, id):
         timetable = TimeTable.objects.get(doctorId=id)
         timetable.delete()
@@ -118,9 +172,29 @@ class TimetableViewDoctor(generics.GenericAPIView):
         timetable = TimeTable.objects.get(doctorId=id)
         return response.Response({"from":timetable.date_from,
                                   "to":timetable.date_to})
-
+        
+# LINK - DELETE /api/Timetable/Hospital/{id}/
+# LINK - GET /api/Timetable/Hospital/{id}/
 class TimetableViewHospital(views.APIView):
-    permission_classes = [AdminOrManagerOrDoctorPermission]
+    """
+    ### Удаление записей расписания больницы
+    
+    ### Получение расписания кабинета больницы
+        **body:**
+        ```
+        {
+            "from": "string(ISO8601)",
+            "to": "string(ISO8601)"
+        }
+        ```
+        **Пример dateTime(ISO8601): "2024-04-25T11:30:00Z"**
+    """
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == 'DELETE':
+            self.permission_classes = [AdminOrManagerPermission]
+        elif request.method == 'GET':
+            self.permission_classes = [permissions.IsAuthenticated]
+        return super().dispatch(request, *args, **kwargs)
     def delete(self, request, id):
         hospital = Hospital.objects.get(pk=id)
         timetable = TimeTable.objects.get(hospitalId=hospital)
@@ -132,7 +206,20 @@ class TimetableViewHospital(views.APIView):
         timetable = TimeTable.objects.get(hospitalId=hospital)
         return response.Response({"from":timetable.date_from,
                                   "to":timetable.date_to})
+
+#LINK - GET /api/Timetable/Room/{id}/{room}/
 class TimeTableByRoomAPIView(views.APIView):
+    """
+    ### Получение расписания кабинета больницы
+        **body:**
+        ```
+        {
+            "from": "string(ISO8601)",
+            "to": "string(ISO8601)"
+        }
+        ```
+        **Пример dateTime(ISO8601): "2024-04-25T11:30:00Z"**
+    """
     permission_classes = [AdminOrManagerOrDoctorPermission]
     def get(self, request, id, room):
         resp = {}
@@ -143,8 +230,22 @@ class TimeTableByRoomAPIView(views.APIView):
         resp["from:"] = " ".join(str(room.id_timetable).split()[1:3])
         resp["to:"] = " ".join(str(room.id_timetable).split()[4:])
         return response.Response(resp)
-           
+
+#LINK - GET /api/Timetable/{id}/Appointments/ 
+#LINK - POST /api/Timetable/{id}/Appointments/    
 class AppointmentView(generics.GenericAPIView):
+    """ 
+    ### Получение свободных талонов на приём
+    
+    ### Записаться на приём
+        **body:**
+        ```
+        {
+            "time": "dateTime(ISO8601)"
+        }
+        ```
+        **Пример dateTime(ISO8601): "2024-04-25T11:30:00Z"**
+    """
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -174,7 +275,11 @@ class AppointmentView(generics.GenericAPIView):
         timetable.save()
         return response.Response("Запись успешно добавлена")
 
+# LINK: DELETE /api/Appointment/{id}/
 class AppointmentViewDelete(views.APIView):
+    """
+    ### Удалить запись на приём
+    """
     permission_classes = [AdminOrManagerOrPacientPermission]
     def delete(self, request, id):
         appointment = Appointment.objects.get(pk=id)
