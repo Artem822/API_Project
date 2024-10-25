@@ -105,6 +105,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
 }
 
+SIMPLE_JWT = {"SIGNING_KEY": "5ahp8kseKOVB_w"}
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',

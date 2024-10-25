@@ -21,7 +21,7 @@ class DoctorOrPacientPermission(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.user.roles.filter(role='Doctor').exists():
             return True
-        elif request.user.roles.filter(role='User').exists() and request.user.appointments.all().exists():
+        elif request.user.roles.filter(role='User').exists() and (request.user.appointments.all().exists() or request.user.history.all().exists()):
             return True
         
 
