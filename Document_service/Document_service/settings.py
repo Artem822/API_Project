@@ -46,9 +46,16 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django.contrib.postgres',
     'drf_spectacular',
+    'django_elasticsearch_dsl',
     "api",
     "Documents"
 ]
+
+ELASTICSEARCH_DSL={
+    'default': {
+        'hosts': 'http://es01:9200'
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
